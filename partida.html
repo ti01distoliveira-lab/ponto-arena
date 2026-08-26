@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Partida - Ponto Arena</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="./ponto-arena-192.png">
+
+<meta name="theme-color" content="#7c3aed">
+</head>
+
+<body>
+
+    <main class="app">
+
+        <header class="cabecalho">
+
+            <div class="logo">🏐</div>
+
+            <div>
+                <h1>Ponto Arena</h1>
+                <p>Partida em andamento</p>
+            </div>
+
+        </header>
+
+
+        <section class="card resumo-partida">
+
+            <h2>🏐 Partida</h2>
+
+            <div class="info-partida">
+
+                <div>
+                    <span>Valor por hora</span>
+                    <strong id="valorHoraExibido">R$ 0,00</strong>
+                </div>
+
+                <div>
+                    <span>Horários</span>
+                    <strong id="horariosExibidos">0</strong>
+                </div>
+
+                <div>
+                    <span>Horário</span>
+                    <strong id="horarioPartida">--:--</strong>
+                </div>
+
+                <div>
+                    <span>Custo total</span>
+                    <strong id="custoTotalExibido">R$ 0,00</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="card" id="areaAdicionar">
+
+            <h2>Adicionar jogador</h2>
+
+            <div class="adicionar-jogador">
+
+                <input
+                    type="text"
+                    id="nomeJogador"
+                    placeholder="Nome do jogador"
+                    autocomplete="off"
+                >
+
+                <input
+                    type="time"
+                    id="entradaTeste"
+                >
+
+                <input
+                    type="time"
+                    id="saidaTeste"
+                >
+
+                <button
+                    id="btnAdicionar"
+                    type="button"
+                >
+                    + Adicionar
+                </button>
+
+            </div>
+
+            <small class="aviso-teste">
+                Para uso real, deixe os horários em branco.
+                Para testar, preencha entrada e saída manualmente.
+            </small>
+
+        </section>
+
+
+        <section class="card">
+
+            <div class="titulo-jogadores">
+
+                <h2>Jogadores</h2>
+
+                <span id="contadorJogadores">
+                    0 jogadores
+                </span>
+
+            </div>
+
+            <div id="listaJogadores"></div>
+
+        </section>
+
+
+        <section class="card controles-partida">
+
+            <button
+                id="btnFinalizar"
+                class="btn-finalizar"
+                type="button"
+            >
+                ✅ Finalizar partida
+            </button>
+
+            <button
+                id="btnCopiar"
+                class="btn-copiar"
+                type="button"
+                style="display:none;"
+            >
+                📋 Copiar resumo para WhatsApp
+            </button>
+
+            <button
+                id="btnNovaPartida"
+                class="btn-nova-partida"
+                type="button"
+            >
+                🔄 Nova partida
+            </button>
+
+        </section>
+
+    </main>
+<script>
+    if ("serviceWorker" in navigator) {
+
+        window.addEventListener("load", function() {
+
+            navigator.serviceWorker.register("sw.js");
+
+        });
+
+    }
+</script>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Ponto Arena</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <link
+        rel="manifest"
+        href="manifest.json"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="./ponto-arena-192.png"
+    >
+
+    <meta
+        name="theme-color"
+        content="#7c3aed"
+    >
+</head>
+
+
+<body>
+
+    <main class="app">
+
+
+        <!-- CABEÇALHO -->
+
+        <header class="cabecalho">
+
+            <div class="logo">
+                🏐
+            </div>
+
+            <div>
+
+                <h1>
+                    Ponto Arena
+                </h1>
+
+                <p>
+                    Controle simples da sua partida
+                </p>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- NOVA PARTIDA -->
+
+        <section class="card">
+
+            <h2>
+                Nova partida
+            </h2>
+            <section class="card" style="margin-top: 20px;">
+
+    <div class="titulo-jogadores">
+
+        <h2>📚 Histórico de partidas</h2>
+
+        <span id="contadorHistorico">
+            0 partidas
+        </span>
+
+    </div>
+
+    <div id="listaHistorico">
+
+        <div class="sem-jogadores">
+
+            <div>📚</div>
+
+            <p>
+                Nenhuma partida salva.
+            </p>
+
+            <small>
+                As partidas finalizadas aparecerão aqui.
+            </small>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+            <!-- MODO DA PARTIDA -->
+
+            <div class="campo">
+
+                <label>
+                    Modo da partida
+                </label>
+
+
+                <div class="seletor-modo">
+
+
+                    <!-- REAL -->
+
+                    <label class="opcao-modo">
+
+                        <input
+                            type="radio"
+                            name="modoPartida"
+                            value="real"
+                            checked
+                        >
+
+                        <div class="modo-conteudo">
+
+                            <strong>
+                                🏐 Uso real
+                            </strong>
+
+                            <span>
+                                Entrada e saída registradas automaticamente
+                                pelo horário do dispositivo.
+                            </span>
+
+                        </div>
+
+                    </label>
+
+
+                    <!-- TESTE -->
+
+                    <label class="opcao-modo">
+
+                        <input
+                            type="radio"
+                            name="modoPartida"
+                            value="teste"
+                        >
+
+                        <div class="modo-conteudo">
+
+                            <strong>
+                                🧪 Modo teste
+                            </strong>
+
+                            <span>
+                                Permite informar os horários manualmente
+                                para testar os cálculos.
+                            </span>
+
+                        </div>
+
+                    </label>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- VALOR POR HORA -->
+
+            <div class="campo">
+
+                <label for="valorHora">
+                    Valor da arena por hora
+                </label>
+
+                <div class="input-dinheiro">
+
+                    <span>
+                        R$
+                    </span>
+
+                    <input
+                        type="number"
+                        id="valorHora"
+                        value="80"
+                        min="0"
+                        step="0.01"
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- QUANTIDADE DE HORÁRIOS -->
+
+            <div class="campo">
+
+                <label for="quantidadeHorarios">
+                    Quantidade de horários
+                </label>
+
+                <input
+                    type="number"
+                    id="quantidadeHorarios"
+                    value="2"
+                    min="1"
+                    step="1"
+                >
+
+            </div>
+
+
+
+            <!-- HORÁRIO INICIAL -->
+
+            <div class="campo">
+
+                <label for="horarioInicio">
+                    Horário de início
+                </label>
+
+                <input
+                    type="time"
+                    id="horarioInicio"
+                    value="20:00"
+                >
+
+            </div>
+
+
+
+            <!-- RESUMO -->
+
+            <div class="resumo">
+
+                <span>
+                    Custo total da arena
+                </span>
+
+                <strong id="custoTotal">
+                    R$ 160,00
+                </strong>
+
+            </div>
+
+
+
+            <!-- INICIAR -->
+
+            <button
+                id="btnIniciar"
+                type="button"
+            >
+                🏐 Iniciar partida
+            </button>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- JAVASCRIPT PRINCIPAL -->
+
+    <script src="app.js"></script>
+
+
+
+    <!-- SERVICE WORKER -->
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker
+                        .register("sw.js")
+                        .then(function() {
+
+                            console.log(
+                                "Ponto Arena pronto para uso offline."
+                            );
+
+                        })
+                        .catch(function(erro) {
+
+                            console.log(
+                                "Erro no Service Worker:",
+                                erro
+                            );
+
+                        });
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>
