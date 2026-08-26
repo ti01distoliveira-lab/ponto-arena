@@ -1,4 +1,4 @@
-const CACHE_NAME = "ponto-arena-v4";
+const CACHE_NAME = "ponto-arena-v5";
 const arquivos = [
     "./",
     "./index.html",
