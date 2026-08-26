@@ -1118,8 +1118,7 @@ function calcularDistribuicao() {
     };
 
 
-    const quantidade =
-        jogadores.length;
+    const quantidade = jogadores.length;
 
 
     if (
@@ -1156,21 +1155,13 @@ function calcularDistribuicao() {
         custoArena;
 
 
-    // Valor de uma hora por jogador
-    // considerando o total de cadastrados.
-
-    const cotaHora =
-        valorArenaHora /
-        quantidade;
-
-
     const duracaoTotalMinutos =
         quantidadeHorarios *
         60;
 
 
     // ========================================
-    // VALORES BASE
+    // INTERVALOS DE COBRANÇA
     // ========================================
 
     jogadores.forEach(
@@ -1280,204 +1271,75 @@ function calcularDistribuicao() {
                     minutos;
 
 
-            resultado
-                .valores[
-                    jogador.id
-                ] =
-                    (
-                        minutos / 60
-                    ) *
-                    cotaHora;
+            const fimCobranca = new Date(
+                Math.min(
+                    fimPartida.getTime(),
+                    inicioCobranca.getTime() + minutos * 60000
+                )
+            );
+
+
+            resultado.valores[jogador.id] = 0;
+            jogador._inicioCobranca = inicioCobranca;
+            jogador._fimCobranca = fimCobranca;
         }
     );
 
 
     // ========================================
-    // REDISTRIBUIÇÃO POR SAÍDA
+    // DIVISÃO POR PRESENÇA
     // ========================================
 
-    let totalParaRedistribuir =
-        0;
+    const pontos = [
+        inicioPartida.getTime(),
+        fimPartida.getTime(),
+        ...jogadores.flatMap(jogador => [
+            jogador._inicioCobranca.getTime(),
+            jogador._fimCobranca.getTime()
+        ])
+    ];
 
 
-    jogadores.forEach(
-        function(jogador) {
-
-            if (!jogador.saida) {
-                return;
-            }
-
-
-            if (
-                jogador.saida >=
-                fimPartida
-            ) {
-                return;
-            }
+    const limites = [...new Set(pontos)]
+        .filter(ponto =>
+            ponto >= inicioPartida.getTime() &&
+            ponto <= fimPartida.getTime()
+        )
+        .sort((a, b) => a - b);
 
 
-            const atraso =
-                Math.max(
-                    0,
-                    diferencaMinutos(
-                        inicioPartida,
-                        jogador.entrada
-                    )
-                );
+    for (let indice = 0; indice < limites.length - 1; indice++) {
+        const inicioTrecho = limites[indice];
+        const fimTrecho = limites[indice + 1];
 
 
-            let minutosSeFicasse;
+        const presentes = jogadores.filter(jogador =>
+            jogador._inicioCobranca.getTime() <= inicioTrecho &&
+            jogador._fimCobranca.getTime() >= fimTrecho
+        );
 
 
-            if (
-                atraso <=
-                TOLERANCIA_ATRASO_MINUTOS
-            ) {
-
-                minutosSeFicasse =
-                    duracaoTotalMinutos;
-            }
-
-            else {
-
-                minutosSeFicasse =
-                    diferencaMinutos(
-                        jogador.entrada,
-                        fimPartida
-                    );
-
-
-                minutosSeFicasse =
-                    Math.max(
-                        MINIMO_COBRANCA_MINUTOS,
-                        minutosSeFicasse
-                    );
-
-
-                minutosSeFicasse =
-                    Math.min(
-                        duracaoTotalMinutos,
-                        minutosSeFicasse
-                    );
-            }
-
-
-            const valorSeFicasse =
-                (
-                    minutosSeFicasse /
-                    60
-                ) *
-                cotaHora;
-
-
-            const valorAtual =
-                resultado
-                    .valores[
-                        jogador.id
-                    ] || 0;
-
-
-            totalParaRedistribuir +=
-                Math.max(
-                    0,
-                    valorSeFicasse -
-                    valorAtual
-                );
+        if (presentes.length === 0) {
+            continue;
         }
-    );
 
 
-    // Só recebe redistribuição quem
-    // permaneceu até o fim.
-
-    const jogadoresQueFicaram =
-        jogadores.filter(
-            jogador =>
-                !jogador.saida ||
-                jogador.saida >=
-                fimPartida
-        );
+        const minutosTrecho = (fimTrecho - inicioTrecho) / 60000;
+        const valorPorJogador =
+            valorArenaHora * (minutosTrecho / 60) /
+            presentes.length;
 
 
-    if (
-        totalParaRedistribuir > 0 &&
-        jogadoresQueFicaram.length > 0
-    ) {
-
-        const adicional =
-            totalParaRedistribuir /
-            jogadoresQueFicaram.length;
-
-
-        jogadoresQueFicaram.forEach(
-            function(jogador) {
-
-                resultado
-                    .valores[
-                        jogador.id
-                    ] +=
-                        adicional;
-            }
-        );
-
-
-        resultado
-            .redistribuidoSaidas =
-                totalParaRedistribuir;
-    }
-
-
-    // ========================================
-    // REDISTRIBUIÇÃO POR ATRASOS
-    // ========================================
-
-    // Quando um jogador chega depois da tolerância,
-    // a parte que ele não paga precisa ser assumida por
-    // quem permaneceu até o fim para o custo fechar.
-
-    const totalAntesDosAtrasos =
-        Object.values(
-            resultado.valores
-        ).reduce(
-            (soma, valor) =>
-                soma + valor,
-            0
-        );
-
-
-    const valorAtrasosParaRedistribuir =
-        Math.max(
-            0,
-            custoArena -
-            totalAntesDosAtrasos
-        );
-
-
-    resultado.diferencaAtrasos =
-        valorAtrasosParaRedistribuir;
-
-
-    if (
-        valorAtrasosParaRedistribuir > 0 &&
-        jogadoresQueFicaram.length > 0
-    ) {
-
-        const adicionalAtrasos =
-            valorAtrasosParaRedistribuir /
-            jogadoresQueFicaram.length;
-
-
-        jogadoresQueFicaram.forEach(
-            function(jogador) {
-
-                resultado
-                    .valores[
-                        jogador.id
-                    ] +=
-                        adicionalAtrasos;
-            }
+        presentes.forEach(jogador =>
+            resultado.valores[jogador.id] += valorPorJogador
         );
     }
+
+
+    jogadores.forEach(function(jogador) {
+        delete jogador._inicioCobranca;
+        delete jogador._fimCobranca;
+    });
 
 
     // ========================================
@@ -1823,23 +1685,6 @@ function adicionarResumoFinanceiro(
 
                 ${formatarDinheiro(
                     totalExibido
-                )}
-
-            </strong>
-
-        </div>
-
-
-        <div>
-
-            <span>
-                Redistribuído por saídas
-            </span>
-
-            <strong>
-
-                ${formatarDinheiro(
-                    calculo.redistribuidoSaidas
                 )}
 
             </strong>
